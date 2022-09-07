@@ -121,6 +121,7 @@ def setup_extension():
         # portaudio, installed by the package manager.
         include_dirs += ['/usr/local/include', '/usr/include']
         external_libraries_path += ['/usr/local/lib', '/usr/lib']
+        extra_objects = ['/usr/lib/x86_64-linux-gnu/libportaudio.a']
 
     return Extension(
         '_portaudio',
