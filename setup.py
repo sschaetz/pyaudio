@@ -65,11 +65,30 @@ def setup_extension():
 
         include_dirs += ['/usr/local/include', '/usr/include']
         external_libraries_path += ['/usr/local/lib', '/usr/lib']
+        if platform.processor() == 'i386':
+            # We are probably running on an M1 but running x86 through rosetta.
+            # For that to work, homebrew needs to be installed/run for x86 and
+            # portaudio needs to be installed with it as well.
+            # Something like this would work:
+            #
+            # cd ~/Downloads
+            # mkdir homebrew
+            # curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+            # sudo mv homebrew /usr/local/homebrew
+            # export PATH=$HOME/bin:/usr/local/bin:$PATH
+            # alias axbrew='arch -x86_64 /usr/local/homebrew/bin/brew'
+            # axbrew install portaudio
+            include_dirs += ['/usr/local/homebrew/include']
+            external_libraries_path += ['/usr/local/homebrew/lib']
+            extra_objects = ["/usr/local/homebrew/lib/libportaudio.a"]
+        elif platform.processor() == 'arm':
+            extra_objects = ["/usr/local/lib/libportaudio.a"]
+
 
         if MAC_SYSROOT_PATH:
             extra_compile_args += ["-isysroot", MAC_SYSROOT_PATH]
             extra_link_args += ["-isysroot", MAC_SYSROOT_PATH]
-        extra_objects = ["/usr/local/lib/libportaudio.a"]
+
     elif sys.platform == 'win32':
         # Only supports statically linking with portaudio, since the typical
         # way users install PyAudio on win32 is through pre-compiled wheels.
