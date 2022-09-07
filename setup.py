@@ -55,6 +55,7 @@ def setup_extension():
     extra_compile_args = []
     extra_link_args = []
     defines = []
+    extra_objects = []
 
     if sys.platform == 'darwin':
         # Support only dynamic linking with portaudio, since the supported path
@@ -68,6 +69,7 @@ def setup_extension():
         if MAC_SYSROOT_PATH:
             extra_compile_args += ["-isysroot", MAC_SYSROOT_PATH]
             extra_link_args += ["-isysroot", MAC_SYSROOT_PATH]
+        extra_objects = ["/usr/local/lib/libportaudio.a"]
     elif sys.platform == 'win32':
         # Only supports statically linking with portaudio, since the typical
         # way users install PyAudio on win32 is through pre-compiled wheels.
@@ -109,7 +111,9 @@ def setup_extension():
         libraries=external_libraries,
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
-        library_dirs=external_libraries_path)
+        library_dirs=external_libraries_path,
+        extra_objects=extra_objects,
+    )
 
 
 with open('README.md', 'r') as fh:
